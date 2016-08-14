@@ -12,11 +12,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.signal as scisig
 import math
+def cleaning(NameOfTheFile,cleaning_position=0):
+    data =open(NameOfTheFile,'r')
+    DataGross=[]
+    DataClean=[]
+    for line in data:    
+        lst=line.split('\r')
+        for string in lst:
+            string=string.split(', ')
+            DataGross.append(string)
+    DataGross.remove(DataGross[-1])   
+    number_of_writings=0 
+    for lst in DataGross:
+        if lst[1]=="00:00:05":
+            number_of_writings+=1
+        elif number_of_writings==1 and lst[1]!="00:00:05":
+            DataClean.append(int(lst[cleaning_position]))
+    return DataClean
 
-
-GSRTdata=np.genfromtxt('Technomancer.txt',skip_header=0,delimiter=',',dtype=float, deletechars='\n')
-HR = np.genfromtxt('2016-4-19_HR_darksouls2.csv',skip_header=1,delimiter=',',dtype=int, deletechars='\n')[:,2]
-RR= np.genfromtxt('2016-5-20_RR_birthday.csv',skip_header=1,delimiter=',',dtype=int, deletechars='\n')[:,1]
+GSRTdata=np.genfromtxt('darksouls2.txt',skip_header=0,delimiter=',',dtype=float, deletechars='\n')
+HR=cleaning('2016-5-20_HR_birthday.csv',2)
+#HR = np.genfromtxt('2016-5-20_HR_birthday.csv',skip_header=1,delimiter=',',dtype=int, deletechars='\n')[:,2]
+RR= cleaning('2016-5-20_RR_birthday.csv',1)
 media_GSR=0
 media_Temp=0
 GSR=[]
@@ -24,8 +41,7 @@ TEMPERATURE=[]
 R=[]
 
 contatore=0
-if len(GSRTdata)!=len(HR)-math.log(len(HR)):#added !
-    print 'ok'
+if len(GSRTdata)==len(HR)-math.log(len(HR)):
     for line in GSRTdata:
         gsr=int(line[0])
         temp=int(line[1])
@@ -46,12 +62,12 @@ Ts=[]
 GSRs=[]
 HRs=[]
 RRs=[]
-if RR.any!=0:
+if len(RR)!=0:
     RRmax=max(RR)
     for value in RR:
         x=value/RRmax
         RRs.append(x)
-if HR.any !=0:
+if len(HR)!=0:
     HRmax=max(HR)
     for beat in HR:
         x=beat/HRmax
@@ -89,7 +105,7 @@ while i<len(HR)-1:
     dHR.append(diffhr)
     i+=1
 
-
+HRs=gaussian_filter(HRs,sigma=4)
 """fs=4
 cutoff=1
 order=5
@@ -97,19 +113,17 @@ nyq = 0.5 * fs
 normal_cutoff = cutoff / nyq
 dGSR = scisig.butter(order, normal_cutoff, btype='low', analog=False) #????
 y = scisig.lfilter()"""
-plt.plot(dGSR)
+#plt.plot(dGSR)
 #plt.plot(dHR, marker='x',linewidth=0.7, mew=0.4, ms=3)
 
-dGSR=gaussian_filter(dGSR,sigma=4)
-GSRs=gaussian_filter(GSRs,sigma=4)
+
 
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
-ax1.plot(GSRs,label='GSR')
-ax1.plot(Ts, label='Temp',marker='x')
-if len(HRs)==len(GSRs):
-    ax1.plot(HRs,marker='x',label='HR',linewidth=0.7, mew=0.4, ms=3)
-#ax1.plot(RRs,marker='o',label='RR',linewidth=0.3, mew=0.4, ms=3)
+#ax1.plot(GSRs,label='GSR')
+#ax1.plot(Ts, label='Temp',marker='x')
+ax1.plot(HRs,marker='x',label='HR',linewidth=0.7, mew=0.4, ms=3, color='red')
+ax1.plot(RRs,marker='o',label='RR',linewidth=0.3, mew=0.4, ms=3, color='orange')
 plt.legend(loc='upper right');
 plt.show()
 
