@@ -7,9 +7,6 @@ Created on Mon Aug 22 16:13:11 2016
 
 from __future__ import division
 from scipy.ndimage.filters import gaussian_filter  
-import time
-start = time.clock()
-
 
 def GSRdata(fileName,dGSR="n",GSRs="n"):
     import numpy as np
