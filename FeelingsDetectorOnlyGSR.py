@@ -6,7 +6,13 @@ Created on Mon Aug 22 16:13:11 2016
 """
 
 from __future__ import division
-from scipy.ndimage.filters import gaussian_filter  
+from scipy.ndimage.filters import gaussian_filter 
+from sklearn.neighbors import NearestNeighbors 
+from matplotlib.colors import ListedColormap
+import time
+import matplotlib.pyplot as plt
+start = time.clock()
+
 
 def GSRdata(fileName,dGSR="n",GSRs="n"):
     import numpy as np
@@ -55,6 +61,6 @@ def GSRdata(fileName,dGSR="n",GSRs="n"):
     ax1 = fig.add_subplot(111)
     ax1.plot(GSR,label='GSR')   
     plt.legend(loc='upper right')
-    plt.ylabel("GSR")
+    plt.ylabel("GSR microSiemens")
     plt.xlabel("time (s)")
     return GSR
